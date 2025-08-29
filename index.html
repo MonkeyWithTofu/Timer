@@ -1,15 +1,92 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer anzeigen</title>
+<meta charset="utf-8">
+<title>Timer Anzeige</title>
+<style>
+  body {
+    margin: 0;
+    background: transparent;
+    display: grid;
+    place-items: center;
+    height: 100vh;
+  }
+  .wrap {
+    text-align: center;
+    background: #cc9bfd;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    transform: scale(2.5);
+    transform-origin: center center;
+  }
+  .time-left {
+    font-size: clamp(50px, 12vw, 120px);
+    font-weight: 800;
+  }
+  .digit-blue {
+    color: #73fefe;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                 -1px 1px 0 #000, 1px 1px 0 #000;
+  }
+  .digit-pink {
+    color: #fea4fb;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                 -1px 1px 0 #000, 1px 1px 0 #000;
+  }
+  .colon {
+    color: #aa55ff;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                 -1px 1px 0 #000, 1px 1px 0 #000;
+  }
+  .status {
+    font-size: 16px;
+    margin-top: 10px;
+    animation: textColorChange 1.5s infinite alternate;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                 -1px 1px 0 #000, 1px 1px 0 #000;
+  }
+  @keyframes textColorChange {
+    0%   { color: #73fefe; }
+    100% { color: #fea4fb; }
+  }
+</style>
 </head>
 <body>
-    <h1>Timer anzeigen</h1>
-    <p>Hier wird der Timer angezeigt.</p>
-    <script>
-        // Timer-Logik hier
-    </script>
+<div class="wrap">
+  <div class="time-left" id="display">00:00:00</div>
+  <div class="status">Website von Zwei Perspektiven - Ein Gedanke</div>
+</div>
+
+<script>
+const display = document.getElementById("display");
+
+function pad(n){ return String(n).padStart(2,"0") }
+
+function updateDisplay(ms){
+  const total = Math.max(0, Math.floor(ms/1000));
+  const h = pad(Math.floor(total/3600));
+  const m = pad(Math.floor((total%3600)/60));
+  const s = pad(total%60);
+  const str = h+m+s;
+  let html = '';
+  for (let i = 0; i < str.length; i++) {
+    const colorClass = (i % 2 === 0) ? 'digit-blue' : 'digit-pink';
+    html += `<span class="${colorClass}">${str[i]}</span>`;
+    if (i === 1 || i === 3) html += `<span class="colon">:</span>`;
+  }
+  display.innerHTML = html;
+}
+
+function tick(){
+  const target = localStorage.getItem("timerTarget");
+  if(!target) { updateDisplay(0); return; }
+  const remaining = target - new Date();
+  updateDisplay(remaining);
+}
+
+setInterval(tick, 500);
+tick();
+</script>
 </body>
 </html>
